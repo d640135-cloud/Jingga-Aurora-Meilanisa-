@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For You 💗</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255, 105, 180, .18), transparent 35%),
+        linear-gradient(135deg, #120812, #260d21, #0d070d);
+      color: white;
+    }
+
+    /* =========================
+       PENGATURAN WHATSAPP
+       ========================= */
+
+    :root {
+      --WA_NUMBER: "6281234567890";
+    }
+
+    /* Background glow */
+    .glow {
+      position: fixed;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(255, 70, 170, .13);
+      filter: blur(70px);
+      animation: glowMove 6s infinite alternate ease-in-out;
+      pointer-events: none;
+    }
+
+    .glow.one {
+      top: -80px;
+      left: -80px;
+    }
+
+    .glow.two {
+      right: -100px;
+      bottom: -100px;
+      animation-delay: 2s;
+    }
+
+    @keyframes glowMove {
+      from {
+        transform: scale(.8);
+        opacity: .5;
+      }
+      to {
+        transform: scale(1.3);
+        opacity: 1;
+      }
+    }
+
+    /* Hujan hati */
+    .hearts {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .heart {
+      position: absolute;
+      top: -30px;
+      color: #ff75bd;
+      font-size: 18px;
+      opacity: .7;
+      animation: fall linear forwards;
+      filter: drop-shadow(0 0 8px rgba(255, 80, 180, .7));
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-30px) rotate(0deg);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: .8;
+      }
+
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Container */
+    .container {
+      position: relative;
+      z-index: 5;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      min-height: 560px;
+      padding: 30px 22px;
+      border: 1px solid rgba(255, 150, 210, .25);
+      border-radius: 28px;
+      background: rgba(30, 10, 27, .72);
+      backdrop-filter: blur(18px);
+      box-shadow:
+        0 0 30px rgba(255, 80, 180, .12),
+        inset 0 0 30px rgba(255, 150, 220, .03);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* =========================
+       AMPLOP
+       ========================= */
+
+    .envelope-area {
+      cursor: pointer;
+      user-select: none;
+      transition: .4s;
+    }
+
+    .envelope-area:hover {
+      transform: scale(1.04);
+    }
+
+    .envelope {
+      position: relative;
+      width: 220px;
+      height: 145px;
+      margin: auto;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #ff72b8, #d92c82);
+      box-shadow:
+        0 15px 35px rgba(255, 50, 160, .3),
+        0 0 25px rgba(255, 100, 190, .3);
+    }
+
+    .envelope::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(35deg, transparent 49%, rgba(255,255,255,.15) 50%, transparent 51%);
+      border-radius: 10px;
+    }
+
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 110px solid transparent;
+      border-right: 110px solid transparent;
+      border-top: 82px solid #ff9bce;
+      transform-origin: top;
+      transition: transform .9s cubic-bezier(.4, 1.6, .4, 1);
+      z-index: 3;
+    }
+
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+    }
+
+    .letter {
+      position: absolute;
+      width: 190px;
+      height: 125px;
+      background: #fff7fc;
+      color: #8b3267;
+      left: 15px;
+      bottom: 8px;
+      border-radius: 7px;
+      transition: transform .9s ease;
+      z-index: 2;
+      padding: 15px;
+      font-size: 13px;
+    }
+
+    .envelope.open .letter {
+      transform: translateY(-90px);
+    }
+
+    .envelope-heart {
+      position: absolute;
+      z-index: 4;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 35px;
+      filter: drop-shadow(0 0 8px #fff);
+      transition: .5s;
+    }
+
+    .envelope.open .envelope-heart {
+      opacity: 0;
+      transform: translateX(-50%) scale(0);
+    }
+
+    .open-text {
+      margin-top: 45px;
+      font-size: 14px;
+      color: #ffb7da;
+      animation: pulse 1.7s infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: .45;
+      }
+    }
+
+    /* =========================
+       CONTENT
+       ========================= */
+
+    .content {
+      display: none;
+      width: 100%;
+      animation: appear .8s ease;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .small {
+      color: #ff9dce;
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(28px, 8vw, 42px);
+      margin-bottom: 18px;
+      background: linear-gradient(90deg, #fff, #ff8bc7, #fff);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 3s infinite linear;
+    }
+
+    @keyframes shine {
+      to {
+        background-position: 200%;
+      }
+    }
+
+    .message {
+      color: #f6dce9;
+      font-size: 15px;
+      line-height: 1.8;
+      margin-bottom: 25px;
+    }
+
+    .next-btn,
+    .yes-btn,
+    .no-btn {
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 13px 28px;
+      transition: .3s;
+      font-family: inherit;
+    }
+
+    .next-btn {
+      color: white;
+      background: linear-gradient(135deg, #ff5bad, #c92877);
+      box-shadow: 0 8px 25px rgba(255, 60, 160, .25);
+    }
+
+    .next-btn:hover,
+    .yes-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 30px rgba(255, 60, 160, .4);
+    }
+
+    /* =========================
+       FINAL
+       ========================= */
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+      min-height: 55px;
+    }
+
+    .yes-btn {
+      background: linear-gradient(135deg, #ff72b8, #e12783);
+      color: white;
+      min-width: 110px;
+    }
+
+    .no-btn {
+      background: rgba(255,255,255,.08);
+      color: #ffc4df;
+      border: 1px solid rgba(255,150,210,.2);
+      min-width: 110px;
+    }
+
+    .no-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .signature {
+      margin-top: 28px;
+      font-size: 12px;
+      color: #b98aa6;
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .container {
+        padding: 14px;
+      }
+
+      .card {
+        min-height: 570px;
+        padding: 25px 18px;
+        border-radius: 24px;
+      }
+
+      .envelope {
+        width: 200px;
+        height: 132px;
+      }
+
+      .flap {
+        border-left-width: 100px;
+        border-right-width: 100px;
+        border-top-width: 75px;
+      }
+
+      .letter {
+        width: 172px;
+        height: 112px;
+        left: 14px;
+      }
+
+      .message {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="glow one"></div>
+  <div class="glow two"></div>
+
+  <div class="hearts" id="hearts"></div>
+
+  <main class="container">
+    <section class="card">
+
+      <!-- =========================
+           AMPLOP
+           ========================= -->
+
+      <div class="envelope-area" id="envelopeArea" onclick="openLetter()">
+
+        <div class="envelope" id="envelope">
+
+          <div class="letter">
+            <b>Untuk kamu 💗</b>
+            <br><br>
+            Di buka yaaa
+          </div>
+
+          <div class="flap"></div>
+
+          <div class="envelope-heart">💗</div>
+
+        </div>
+
+        <div class="open-text">
+          Tap surat ini untuk membukanya 💌
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           TAHAP 1
+           ========================= -->
+
+      <div class="content" id="step1">
+
+        <div class="small">Ada sesuatu...</div>
+
+        <h1>Hai kamu Jingga Aurora Meilanisa💗</h1>
+
+        <p class="message">
+          Aku tau kita baru dekat beberapa hari ini, jadi mungkin agak cepat kalau aku ngomong kaya gini Tapi aku lebih suka jujur daripada nyimpen sendiri apa yang aku rasain.
+        </p>
+
+        <button class="next-btn" onclick="nextStep(2)">
+          Lanjut ✨
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           TAHAP 2
+           ========================= -->
+
+      <div class="content" id="step2">
+
+        <div class="small">Jujur sedikit</div>
+
+        <h1>Selama beberapa hari ini...</h1>
+
+        <p class="message">
+          Aku Ngerasa nyaman ngobrol sama kamu Mungkin kita belum terlalu lama saling kenal, tapi entah kenapa aku nyaman banget ngobrol sama kamu
+        </p>
+
+        <button class="next-btn" onclick="nextStep(3)">
+          Lanjut lagi 💕
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           TAHAP 3
+           ========================= -->
+
+      <div class="content" id="step3">
+
+        <div class="small">Jadi, aku mau jujur</div>
+
+        <h1>Aku suka kamu</h1>
+
+        <p class="message">
+          Aku nggak berharap kamu langsung punya perasaan yang sama, Aku cuma mau kamu tau apa yang sebenarnya aku rasain
+        </p>
+
+        <button class="next-btn" onclick="nextStep(4)">
+          Ada satu pertanyaan...
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           TAHAP 4
+           ========================= -->
+
+      <div class="content" id="step4">
+
+        <div class="small">Last question</div>
+
+        <h1>Jadi singkat saja</h1>
+
+        <p class="message">
+          Would you like to be my girlfriend?
+        </p>
+
+        <div class="buttons">
+
+          <button class="yes-btn" onclick="answer('yes')">
+            Iyaa aku mau ❤️
+          </button>
+
+          <button class="no-btn" id="noButton" onclick="answer('no')">
+            gamau deh
+          </button>
+
+        </div>
+
+        <div class="signature">
+          Dibuat dengan sedikit keberanian dan banyak rasa. 💌
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+
+
+  <script>
+
+    /* =========================================
+       GANTI NOMOR WHATSAPP DI SINI
+       Format:
+       628xxxxxxxxxx
+       Jangan gunakan tanda + atau spasi.
+       ========================================= */
+
+    const WA_NUMBER = "6281947876797";
+
+
+    /* =========================================
+       BUKA SURAT
+       ========================================= */
+
+    function openLetter() {
+
+      const envelope = document.getElementById("envelope");
+      const area = document.getElementById("envelopeArea");
+
+      envelope.classList.add("open");
+
+      setTimeout(() => {
+        area.style.display = "none";
+        document.getElementById("step1").classList.add("active");
+      }, 1100);
+
+    }
+
+
+    /* =========================================
+       PINDAH TAHAP
+       ========================================= */
+
+    function nextStep(step) {
+
+      document.querySelectorAll(".content").forEach(content => {
+        content.classList.remove("active");
+      });
+
+      const next = document.getElementById("step" + step);
+
+      if (next) {
+        next.classList.add("active");
+      }
+
+    }
+
+
+    /* =========================================
+       JAWABAN YES / NO
+       ========================================= */
+
+    function answer(type) {
+
+      let message = "";
+
+      if (type === "yes") {
+
+        message =
+          "iyaa Aku udah liat confess-nya jawaban aku, aku mau jadi cewe kamu🫶🏻";
+
+      } else {
+
+        message =
+          "Aku udah ngeliat confess-nya Maaf, jawaban aku ngga deh Semoga kita tetap baik-baik aja";
+
+      }
+
+      const url =
+        "https://wa.me/" +
+        WA_NUMBER +
+        "?text=" +
+        encodeURIComponent(message);
+
+      window.location.href = url;
+
+    }
+
+
+    /* =========================================
+       HUJAN HATI
+       ========================================= */
+
+    function createHeart() {
+
+      const container = document.getElementById("hearts");
+
+      const heart = document.createElement("span");
+
+      heart.classList.add("heart");
+
+      const hearts = ["♥", "♡", "💗", "💖", "💕"];
+
+      heart.innerHTML =
+        hearts[Math.floor(Math.random() * hearts.length)];
+
+      heart.style.left =
+        Math.random() * 100 + "vw";
+
+      heart.style.fontSize =
+        (10 + Math.random() * 18) + "px";
+
+      heart.style.animationDuration =
+        (4 + Math.random() * 5) + "s";
+
+      heart.style.animationDelay =
+        Math.random() * 1.5 + "s";
+
+      container.appendChild(heart);
+
+      setTimeout(() => {
+        heart.remove();
+      }, 10000);
+
+    }
+
+    setInterval(createHeart, 350);
+
+    /* Buat beberapa hati langsung saat halaman dibuka */
+    for (let i = 0; i < 12; i++) {
+      setTimeout(createHeart, i * 150);
+    }
+
+  </script>
+
+</body>
+</html>
